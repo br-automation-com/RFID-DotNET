@@ -77,11 +77,14 @@ namespace RFID_USB
                 RFID_USB.OnResponseData += new BR_RFID.ResponseData(RFID_USB_OnResponseData);
                 RFID_USB.connect();
 
-                if (RFID_USB.port != -1) txtOutput.AppendText(DateTime.Now.TimeOfDay + " RFID receiver found on port " + RFID_USB.port + "\r\n");
-                if (chkSendBallon.Checked)
+                if (RFID_USB.port != -1)
                 {
-                    trayIcon.BalloonTipText = " RFID receiver found on port " + RFID_USB.port;
-                    trayIcon.ShowBalloonTip(3);
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " RFID receiver found on port " + RFID_USB.port + "\r\n");
+                    if (chkSendBallon.Checked)
+                    {
+                        trayIcon.BalloonTipText = " RFID receiver found on port " + RFID_USB.port;
+                        trayIcon.ShowBalloonTip(3);
+                    }
                 }
             }
             catch (Exception ex)
@@ -120,6 +123,10 @@ namespace RFID_USB
                         trayIcon.BalloonTipText = " False key reading!";
                         trayIcon.ShowBalloonTip(3);
                     }
+                    break;
+                case BR_RFID.excDisconnected:
+                    MessageBox.Show("RFID reader disconnected!", "B&R RFID Reader", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    btnConnect.Enabled = true;
                     break;
             }
         }

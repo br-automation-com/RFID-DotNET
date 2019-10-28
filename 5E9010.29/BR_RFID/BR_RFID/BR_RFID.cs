@@ -31,6 +31,7 @@ namespace BR_RFID_DRIVER
         public const byte excReaderNotFound = 1;
         public const byte excResponseTimeout = 2;
         public const byte excResponseSize = 3;
+        public const byte excDisconnected = 4;
 
         // ------------------------------------------------------------------------
         /// <summary>Response data event. This event is called when new data arrives</summary>
@@ -246,7 +247,20 @@ namespace BR_RFID_DRIVER
         internal void RefreshTimer_Elapsed(object state)
         {
             Debug.WriteLine(DateTime.Now + " " + DateTime.Now.Millisecond + " Read timer");
-            if ((_data_ser == "") && (serRFID != null) && (serRFID.IsOpen))
+            if(!serRFID.IsOpen)
+            {
+                _connected = false;
+                try
+                {
+                    disconnect();
+                }
+                catch (Exception ex)
+                {
+                }
+                if (OnException != null) OnException(excDisconnected);
+                return;
+            }
+            if ((_data_ser == "") && (serRFID != null))
             {
                 try
                 {
