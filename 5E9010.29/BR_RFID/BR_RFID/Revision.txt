@@ -1,0 +1,7 @@
+﻿Version 1.1
+
+- Added timeout value for read/write to make driver more stable
+
+Version 1.0
+
+- First release
