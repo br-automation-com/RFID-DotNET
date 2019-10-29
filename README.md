@@ -25,6 +25,7 @@ The application can be configured with the INI file that is located in the direc
 ## Requirements
 * B&R RFID reader 5E9000.29
 * B&R RFID reader 5E9010.29
+* B&R RFID reader 5E9030.29
 
 <a name="Revision-History"></a>
 ## Revision History
