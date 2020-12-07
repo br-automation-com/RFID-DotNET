@@ -127,7 +127,7 @@ namespace BR_RFID_DRIVER
             serRFID.WriteTimeout = _timeout;
             _port_cur = 1;
 
-            // Serach for RFID reader
+            // Search for RFID reader
             while (_port_cur < _port_max)
             {
                 // Find open COM port
@@ -200,14 +200,14 @@ namespace BR_RFID_DRIVER
         // Return data from RFID reader
         void serRFID_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            // Append data until end is reached
+            // Append data until end is reached, reset timer
             _data_ser = _data_ser + serRFID.ReadExisting();
             Debug.WriteLine(DateTime.Now + " " + DateTime.Now.Millisecond + " Read response:" + _data_ser);
+            TimeoutTimer.Change(-1, 0);
+            _retrys = 0;
+
             if (_data_ser.Contains("Command") || _data_ser.Contains("PiccSelect"))
             {
-                TimeoutTimer.Change(-1, 0);
-                _retrys = 0;
-
                 // Split data and send respond
                 try
                 {
@@ -275,7 +275,7 @@ namespace BR_RFID_DRIVER
         // Response timeout timer
         internal void TimeoutTimer_Elapsed(object state)
         {
-            Debug.WriteLine(DateTime.Now + " " + DateTime.Now.Millisecond + " Timeout timer");
+            Debug.WriteLine(DateTime.Now + " " + DateTime.Now.Millisecond + " Timeout timer, retry " + _retrys.ToString());
 
             _retrys++;
             if (_retrys > 10)
@@ -289,8 +289,9 @@ namespace BR_RFID_DRIVER
                 {
                 }
                 if (OnException != null) OnException(excResponseTimeout);
+                return;
             }
-            TimeoutTimer.Change(-1, 0);
+            if(TimeoutTimer != null) TimeoutTimer.Change(-1, 0);
         }
     }
 }
