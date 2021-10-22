@@ -1,6 +1,7 @@
 ## Table of Contents
 * [Introduction](#Introduction)
 * [Requirements](#Requirements)
+* [Downloads](#Downloads)
 * [Revision History](#Revision-History)
 
 <a name="Introduction"></a>
@@ -26,6 +27,12 @@ The application can be configured with the INI file that is located in the direc
 * B&R RFID reader 5E9000.29
 * B&R RFID reader 5E9010.29
 * B&R RFID reader 5E9030.29
+
+<a name="Downloads"></a>
+Here is a list of setup files that can be installed:
+* ![5E9000.29](https://github.com/br-automation-com/RFID-DotNET/releases/download/V0.1/RFID_Setup_5E9000.msi) 
+* ![5E9010.29](https://github.com/br-automation-com/RFID-DotNET/releases/download/V0.1/RFID_Setup_5E9010.msi) 
+* ![5E9030.29](https://github.com/br-automation-com/RFID-DotNET/releases/download/V1.1/RFID_Setup_5E9030.msi) 
 
 <a name="Revision-History"></a>
 ## Revision History
