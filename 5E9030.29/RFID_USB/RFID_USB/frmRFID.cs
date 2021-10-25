@@ -67,7 +67,6 @@ namespace RFID_USB
         {
             try
             {
-                btnConnect.Enabled = false;
                 // Create new RFID driver instance and try to connect
                 RFID_USB = new BR_RFID();
                 RFID_USB.timeout = ResponseTimeout;
@@ -85,6 +84,7 @@ namespace RFID_USB
                         trayIcon.BalloonTipText = " RFID receiver found on port " + RFID_USB.port;
                         trayIcon.ShowBalloonTip(3);
                     }
+                    btnConnect.Enabled = false;
                 }
             }
             catch (Exception ex)
@@ -96,13 +96,13 @@ namespace RFID_USB
 
         // ------------------------------------------------------------------------
         // RFID driver exception exception
-        void RFID_USB_OnException(byte exception)
+        private void RFID_USB_OnException(byte exception, int port)
         {
             // ------------------------------------------------------------------
             // Seperate calling threads
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new BR_RFID.ExceptionData(RFID_USB_OnException), new object[] { exception });
+                this.BeginInvoke(new BR_RFID.ExceptionData(RFID_USB_OnException), new object[] { exception, port });
                 return;
             }
 
@@ -110,10 +110,12 @@ namespace RFID_USB
             {
                 case BR_RFID.excReaderNotFound:
                     MessageBox.Show("No RFID USB reader found!", "B&R RFID Reader", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " No RFID USB reader found!\r\n");
                     btnConnect.Enabled = true;
                     break;
                 case BR_RFID.excResponseTimeout:
                     MessageBox.Show("RFID reader timeout!", "B&R RFID Reader", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " RFID reader timeout!\r\n");
                     btnConnect.Enabled = true;
                     break;
                 case BR_RFID.excResponseSize:
@@ -126,6 +128,23 @@ namespace RFID_USB
                     break;
                 case BR_RFID.excDisconnected:
                     MessageBox.Show("RFID reader disconnected!", "B&R RFID Reader", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " RFID reader disconnected!\r\n");
+                    btnConnect.Enabled = true;
+                    break;
+                case BR_RFID.excPortGeneric:
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " Port " + port.ToString() + " general error\r\n");
+                    btnConnect.Enabled = true;
+                    break;
+                case BR_RFID.excPortDoesNotExist:
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " Port " + port.ToString() + " does not exist\r\n");
+                    btnConnect.Enabled = true;
+                    break;
+                case BR_RFID.excPortAccesDenied:
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " Port " + port.ToString() + " access denied\r\n");
+                    btnConnect.Enabled = true;
+                    break;
+                case BR_RFID.excPortWrongDevice:
+                    txtOutput.AppendText(DateTime.Now.TimeOfDay + " Port " + port.ToString() + " wrong device\r\n");
                     btnConnect.Enabled = true;
                     break;
             }

@@ -1,4 +1,7 @@
-﻿Version 1.1
+﻿Version 1.2
+- Added more log details and exceptions
+
+Version 1.1
 - Fixed null reference exception on timeout handler
 
 Version 1.0

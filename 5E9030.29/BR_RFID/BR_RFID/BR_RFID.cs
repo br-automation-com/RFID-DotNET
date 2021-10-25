@@ -31,6 +31,10 @@ namespace BR_RFID_DRIVER
         public const byte excResponseTimeout = 2;
         public const byte excResponseSize = 3;
         public const byte excDisconnected = 4;
+        public const byte excPortGeneric = 10;
+        public const byte excPortDoesNotExist = 11;
+        public const byte excPortAccesDenied = 12;
+        public const byte excPortWrongDevice = 13;
 
         // ------------------------------------------------------------------------
         /// <summary>Response data event. This event is called when new data arrives</summary>
@@ -38,7 +42,7 @@ namespace BR_RFID_DRIVER
         /// <summary>Response data event. This event is called when new data arrives</summary>
         public event ResponseData OnResponseData;
         /// <summary>Exception data event. This event is called when the data is incorrect</summary>
-        public delegate void ExceptionData(byte exception);
+        public delegate void ExceptionData(byte exception, int port);
         /// <summary>Exception data event. This event is called when the data is incorrect</summary>
         public event ExceptionData OnException;
 
@@ -120,8 +124,10 @@ namespace BR_RFID_DRIVER
 
         // ------------------------------------------------------------------------
         /// <summary>Start connection to RFID reader.</summary>
-            public void connect()
+        public void connect()
         {
+            if (_connected) return;
+
             serRFID = new System.IO.Ports.SerialPort();
             serRFID.ReadTimeout = _timeout;
             serRFID.WriteTimeout = _timeout;
@@ -158,12 +164,14 @@ namespace BR_RFID_DRIVER
                         else
                         {
                             serRFID.Close();
+                            if (OnException != null) OnException(excPortWrongDevice, _port_cur);
                             _port_cur++;
                         }
                     }
                     catch (Exception ex)
                     {
                         serRFID.Close();
+                        if (OnException != null) OnException(excPortGeneric, _port_cur);
                         _port_cur++;
                     }
                 }
@@ -172,7 +180,7 @@ namespace BR_RFID_DRIVER
             if (_port_cur == _port_max)
             {
                 _port_cur = -1;
-                if (OnException != null) OnException(excReaderNotFound);
+                if (OnException != null) OnException(excReaderNotFound, _port_max);
             }
         }
 
@@ -189,11 +197,20 @@ namespace BR_RFID_DRIVER
                 serRFID.Open();
                 return port;
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                if (OnException != null) OnException(excPortAccesDenied, cur_port);
+            }
+            catch (IOException ex)
+            {
+                if (OnException != null) OnException(excPortDoesNotExist, cur_port);
+            }
             catch (Exception ex)
             {
-                if (cur_port < _port_max) port = findCOMport(cur_port + 1);
-                return port;
+                if (OnException != null) OnException(excPortGeneric, cur_port);
             }
+            if (cur_port < _port_max) port = findCOMport(cur_port + 1);
+            return port;
         }
 
         // ------------------------------------------------------------------------
@@ -223,7 +240,7 @@ namespace BR_RFID_DRIVER
                             if (_id_old != _id && _id != "")
                             {
                                 if (_id.Length >= _key_min_length) OnResponseData(id);
-                                else if (OnException != null) OnException(excResponseSize);
+                                else if (OnException != null) OnException(excResponseSize, Convert.ToByte(serRFID.PortName));
                             }
                             _id_old = _id;
                         }
@@ -252,7 +269,7 @@ namespace BR_RFID_DRIVER
                 catch (Exception ex)
                 {
                 }
-                if (OnException != null) OnException(excDisconnected);
+                if (OnException != null) OnException(excDisconnected, port);
                 return;
             }
             if ((_data_ser == "") && (serRFID != null))
@@ -288,7 +305,7 @@ namespace BR_RFID_DRIVER
                 catch (Exception ex)
                 {
                 }
-                if (OnException != null) OnException(excResponseTimeout);
+                if (OnException != null) OnException(excResponseTimeout, Convert.ToByte(serRFID.PortName));
                 return;
             }
             if(TimeoutTimer != null) TimeoutTimer.Change(-1, 0);
