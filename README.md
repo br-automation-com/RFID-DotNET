@@ -38,5 +38,12 @@ Here is a list of setup files that can be installed:
 <a name="Revision-History"></a>
 ## Revision History
 
+#### Version 1.2
+- 5E9030.29 Added more log details and exceptions
+
+#### Version 1.1
+- 5E9030.29 Fixed null reference exception on timeout handler
+
+
 #### Version 0.1
 - First public release
