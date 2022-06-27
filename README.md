@@ -38,6 +38,9 @@ Here is a list of setup files that can be installed:
 <a name="Revision-History"></a>
 ## Revision History
 
+#### Version 1.3
+- 5E9030.29 Fixed false reading could cause program to crash
+
 #### Version 1.2
 - 5E9030.29 Added more log details and exceptions
 
