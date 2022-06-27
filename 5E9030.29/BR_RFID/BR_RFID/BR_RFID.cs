@@ -240,7 +240,7 @@ namespace BR_RFID_DRIVER
                             if (_id_old != _id && _id != "")
                             {
                                 if (_id.Length >= _key_min_length) OnResponseData(id);
-                                else if (OnException != null) OnException(excResponseSize, Convert.ToByte(serRFID.PortName));
+                                else if (OnException != null) OnException(excResponseSize, _port_cur);
                             }
                             _id_old = _id;
                         }
